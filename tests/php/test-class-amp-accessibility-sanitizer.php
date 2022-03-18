@@ -28,9 +28,9 @@ class AMP_Accessibility_Sanitizer_Test extends TestCase {
 	 *
 	 * @inheritDoc
 	 */
-	public function setUp() {
+	public function set_up() {
 
-		parent::setUp();
+		parent::set_up();
 
 		global $_wp_current_template_content, $_wp_theme_features;
 		$this->original_wp_current_template_content = $_wp_current_template_content;
@@ -42,9 +42,9 @@ class AMP_Accessibility_Sanitizer_Test extends TestCase {
 	 *
 	 * @inheritDoc
 	 */
-	public function tearDown() {
+	public function tear_down() {
 
-		parent::tearDown();
+		parent::tear_down();
 
 		global $_wp_current_template_content, $_wp_theme_features;
 		$_wp_current_template_content = $this->original_wp_current_template_content;

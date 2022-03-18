@@ -28,17 +28,17 @@ class PairedRoutingTest extends DependencyInjectedTestCase {
 	/** @var PairedRouting */
 	private $instance;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		unset( $_SERVER['HTTPS'] );
 		$this->instance = $this->injector->make( PairedRouting::class );
 	}
 
-	public function tearDown() {
+	public function tear_down() {
 		unset( $_SERVER['REQUEST_URI'] );
-		parent::tearDown();
 		unregister_taxonomy( amp_get_slug() );
 		unregister_post_type( amp_get_slug() );
+		parent::tear_down();
 	}
 
 	/** @covers ::__construct() */
@@ -901,6 +901,8 @@ class PairedRoutingTest extends DependencyInjectedTestCase {
 	 * @param callable|null $url_callback
 	 */
 	public function test_has_endpoint( $setup_callback, $expected_has_endpoint, $url_callback ) {
+		$GLOBALS['wp_the_query'] = $GLOBALS['wp_query']; // Needed as of <https://github.com/ampproject/amp-wp/pull/6466>.
+
 		if ( $setup_callback ) {
 			$setup_callback( $this->instance );
 		}

@@ -83,17 +83,17 @@ final class ReaderThemeSupportFeaturesTest extends DependencyInjectedTestCase {
 	/** @var ReaderThemeSupportFeatures */
 	private $instance;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		$this->instance = $this->injector->make( ReaderThemeSupportFeatures::class );
 
 		$this->register_core_themes();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
-
+	public function tear_down() {
 		$this->restore_theme_directories();
+
+		parent::tear_down();
 	}
 
 	/** @covers ::__construct() */
@@ -178,7 +178,7 @@ final class ReaderThemeSupportFeaturesTest extends DependencyInjectedTestCase {
 		$this->add_theme_supports( $theme_supports );
 
 		$filtered = $this->instance->filter_amp_options_updating( $initial_options );
-		$this->assertArraySubset( $initial_options, $filtered );
+		$this->assertAssocArrayContains( $initial_options, $filtered );
 		$this->assertArrayHasKey( Option::PRIMARY_THEME_SUPPORT, $filtered );
 		if ( null === $primary_theme_support ) {
 			$this->assertNull( $filtered[ Option::PRIMARY_THEME_SUPPORT ] );
@@ -226,6 +226,7 @@ final class ReaderThemeSupportFeaturesTest extends DependencyInjectedTestCase {
 		AMP_Options_Manager::update_option( Option::PRIMARY_THEME_SUPPORT, null );
 		switch_theme( self::THEME_PRIMARY );
 		AMP_Options_Manager::update_option( Option::READER_THEME, self::THEME_READER );
+		AMP_Options_Manager::update_option( Option::THEME_SUPPORT, AMP_Theme_Support::READER_MODE_SLUG );
 
 		/** @var ReaderThemeLoader $reader_theme_loader */
 		$reader_theme_loader = $this->get_private_property( $this->instance, 'reader_theme_loader' );
@@ -247,6 +248,7 @@ final class ReaderThemeSupportFeaturesTest extends DependencyInjectedTestCase {
 		AMP_Options_Manager::update_option( Option::PRIMARY_THEME_SUPPORT, null );
 		switch_theme( self::THEME_PRIMARY );
 		AMP_Options_Manager::update_option( Option::READER_THEME, self::THEME_READER );
+		AMP_Options_Manager::update_option( Option::THEME_SUPPORT, AMP_Theme_Support::READER_MODE_SLUG );
 
 		/** @var ReaderThemeLoader $reader_theme_loader */
 		$reader_theme_loader = $this->get_private_property( $this->instance, 'reader_theme_loader' );
@@ -284,7 +286,10 @@ final class ReaderThemeSupportFeaturesTest extends DependencyInjectedTestCase {
 		$this->assertEqualSets( array_keys( $reduced ), array_keys( self::TEST_ALL_THEME_SUPPORTS ) );
 		foreach ( array_keys( self::TEST_ALL_THEME_SUPPORTS ) as $feature ) {
 			$this->assertNotEquals( $reduced[ $feature ], $non_reduced[ $feature ] );
-			$this->assertArraySubset( $reduced[ $feature ], $non_reduced[ $feature ] );
+			$this->assertSame( count( $reduced[ $feature ] ), count( $non_reduced[ $feature ] ) );
+			for ( $i = 0, $len = count( $reduced[ $feature ] ); $i < $len; $i++ ) {
+				$this->assertAssocArrayContains( $reduced[ $feature ][ $i ], $non_reduced[ $feature ][ $i ] );
+			}
 		}
 	}
 
