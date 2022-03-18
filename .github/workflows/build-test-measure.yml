@@ -488,6 +488,15 @@ jobs:
       - name: Copy plugin to WP plugins directory
         if: needs.pre-run.outputs.changed-php-count > 0
         run: cp -r "$PWD" "$WP_CORE_DIR/src/wp-content/plugins/amp"
+        
+      - name: Setup PCOV	
+        if: ${{ matrix.coverage == true }}	
+        # phpdocumentor/reflection has to be removed as it makes use of an outdated dependency, making pcov/clobber	
+        # unable to be installed.	
+        run: |	
+          composer remove --dev phpdocumentor/reflection	
+          composer require --dev --ignore-platform-reqs pcov/clobber	
+          vendor/bin/pcov clobber
 
       - name: Run tests
         if: ${{ matrix.coverage == false && needs.pre-run.outputs.changed-php-count > 0 }}
