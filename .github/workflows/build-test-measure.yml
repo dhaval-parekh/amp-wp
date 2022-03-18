@@ -34,11 +34,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.0']
-        wp: ['latest']
-        external-http: [false]
-        install-pwa-plugin: [true]
-        coverage: [false]
         include:
           - php: '7.4'
             wp: 'latest'
@@ -131,19 +126,15 @@ jobs:
         if: needs.pre-run.outputs.changed-php-count > 0
         run: bash bin/ci/after-wp-install.sh ${{ matrix.wp }} ${{ matrix.install-pwa-plugin == true }}
 
+      - name: Setup PCOV
+        if: ${{ matrix.coverage == true }}
+        run: |
+          composer require --dev --ignore-platform-reqs pcov/clobber
+          vendor/bin/pcov clobber
+
       - name: Copy plugin to WP plugins directory
         if: needs.pre-run.outputs.changed-php-count > 0
         run: cp -r "$PWD" "$WP_CORE_DIR/src/wp-content/plugins/amp"
-        
-      - name: Setup PCOV
-        if: ${{ matrix.coverage == true }}
-        # phpdocumentor/reflection has to be removed as it makes use of an outdated dependency, making pcov/clobber
-        # unable to be installed.
-        run: |
-          composer remove --dev phpdocumentor/reflection
-          composer require --dev --ignore-platform-reqs pcov/clobber
-          vendor/bin/pcov clobber
-          working-directory: ${{ env.WP_CORE_DIR }}/src/wp-content/plugins/amp
 
       - name: Run tests
         if: ${{ matrix.coverage == false && needs.pre-run.outputs.changed-php-count > 0 }}
