@@ -108,6 +108,7 @@ jobs:
       - name: Setup PCOV
         if: ${{ matrix.coverage == true }}
         run: |
+          composer remove --dev phpdocumentor/reflection
           composer require --dev --ignore-platform-reqs pcov/clobber
           vendor/bin/pcov clobber
 
