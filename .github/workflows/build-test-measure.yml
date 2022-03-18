@@ -50,7 +50,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: curl, date, dom, gd, iconv, json, libxml, mysql, spl
-          coverage: ${{ matrix.coverage && 'xdebug2' || 'none' }}
+          coverage: ${{ matrix.coverage && 'pcov' || 'none' }}
           ini-values: pcov.directory=.
 
       - name: Shutdown default MySQL service
