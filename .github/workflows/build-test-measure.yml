@@ -115,28 +115,28 @@ jobs:
         run: cp -r "$PWD" "$WP_CORE_DIR/src/wp-content/plugins/amp"
 
       - name: Run tests
-        if: ${{ matrix.coverage == false && needs.pre-run.outputs.changed-php-count > 0 }}
+        if: ${{ matrix.coverage == false }}
         run: vendor/bin/phpunit --verbose
         working-directory: ${{ env.WP_CORE_DIR }}/src/wp-content/plugins/amp
         env:
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
 
       - name: Run tests with coverage
-        if: ${{ matrix.coverage == true && needs.pre-run.outputs.changed-php-count > 0 }}
+        if: ${{ matrix.coverage == true }}
         run: vendor/bin/phpunit --verbose --coverage-clover ${{ env.WP_CORE_DIR }}/src/wp-content/plugins/amp/build/logs/clover.xml
         working-directory: ${{ env.WP_CORE_DIR }}/src/wp-content/plugins/amp
         env:
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
 
       - name: Run external HTTP tests
-        if: ${{ matrix.external-http == true && needs.pre-run.outputs.changed-php-count > 0 }}
+        if: ${{ matrix.external-http == true }}
         run: vendor/bin/phpunit --testsuite external-http
         working-directory: ${{ env.WP_CORE_DIR }}/src/wp-content/plugins/amp
         env:
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
 
       - name: Upload code coverage report
-        if: ${{ matrix.coverage == true && needs.pre-run.outputs.changed-php-count > 0 }}
+        if: ${{ matrix.coverage == true }}
         uses: codecov/codecov-action@v2.1.0
         with:
           file: ${{ env.WP_CORE_DIR }}/src/wp-content/plugins/amp/build/logs/clover.xml
